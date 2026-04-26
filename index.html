@@ -66,8 +66,12 @@ body {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 28px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.9s ease, visibility 0.9s ease;
 }
+#loader.show { opacity: 1; visibility: visible; pointer-events: auto; }
 #loader.gone { opacity: 0; visibility: hidden; pointer-events: none; }
 .ld-name { font-family: 'Bebas Neue', sans-serif; font-size: 4.5rem; letter-spacing: 0.35em; color: #fff; }
 .ld-bar-wrap { width: 220px; height: 1px; background: rgba(255,255,255,0.08); overflow: hidden; }
@@ -131,7 +135,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; a
 .hero-tagline { font-family: 'Space Mono', monospace; font-size: clamp(0.62rem, 1.2vw, 0.78rem); letter-spacing: 0.45em; text-transform: uppercase; color: var(--dim); margin-top: 20px; }
 .hero-tagline .ac { color: var(--c); }
 
-.status-pill { display: inline-flex; align-items: center; gap: 10px; padding: 10px 26px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; border: 1px solid; margin-top: 36px; }
+.status-pill { display: inline-flex; align-items: center; gap: 10px; padding: 10px 26px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; transition: all 0.3s; border: 1px solid; margin-top: 36px; pointer-events: none; }
 .status-pill.av { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.4); color: #10b981; }
 .status-pill.bz { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.4); color: #ef4444; }
 .sdot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; animation: sdot-pulse 1.6s infinite; }
@@ -312,45 +316,304 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
 .f-copy { font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dim); }
 
 /* ═══════════════════════════════════════════
-   MOBILE
+   MOBILE IMPROVEMENTS
 ═══════════════════════════════════════════ */
 @media (max-width: 768px) {
   body { cursor: default; }
   #cur, #cur-r { display: none; }
-  nav { padding: 14px 20px; }
-  .nav-logo { font-size: 1.4rem; }
-  .nav-links, #nav-status-wrap { display: none; }
-  .sec { padding: 60px 20px; }
-  .sec-title { font-size: clamp(2.2rem, 12vw, 3.5rem); margin-bottom: 36px; }
-  .hero { min-height: 100vh; padding: 80px 20px 40px; }
-  .glitch { font-size: clamp(60px, 20vw, 120px); }
-  .hero-tagline { font-size: 0.55rem; letter-spacing: 0.25em; margin-top: 16px; }
-  .hero-time { font-size: 0.52rem; margin-bottom: 16px; }
-  .status-pill { padding: 10px 20px; font-size: 0.55rem; margin-top: 28px; }
-  .hero-scroll { bottom: 24px; }
-  .about-grid, .tos-grid, .contact-grid { grid-template-columns: 1fr; }
-  .about-stat, .about-bio { padding: 32px 24px; }
-  .about-stat-n { font-size: 4rem; }
-  .ptabs { flex-wrap: wrap; }
-  .ptab { padding: 12px 20px; font-size: 0.55rem; flex: 1; min-width: 120px; }
-  .pgrid { grid-template-columns: 1fr; }
-  .pi { aspect-ratio: 16/11; }
-  .pi-ov { opacity: 1; }
-  .exp-row { grid-template-columns: 1fr; gap: 16px; padding: 24px 20px; }
-  .tos-card { padding: 32px 24px; }
-  .queue-box { grid-template-columns: 1fr; gap: 24px; padding: 28px 20px; }
-  .c-link { padding: 24px 20px; gap: 16px; }
-  .c-icon { width: 48px; height: 48px; font-size: 1.4rem; }
-  footer { flex-direction: column; gap: 12px; text-align: center; padding: 28px 20px; }
-  #mp { bottom: 16px; left: 16px; padding: 12px 16px; gap: 10px; }
-  .mp-info, .mp-vol { display: none; }
-  .reviews-top { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .review-card { padding: 24px; }
+  
+  nav { 
+    padding: 16px 24px; 
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .nav-logo { font-size: 1.5rem; }
+  .nav-links { 
+    display: none;
+  }
+  #nav-status-wrap { 
+    margin-left: auto;
+  }
+  
+  .sec { 
+    padding: 70px 24px; 
+  }
+  .sec-title { 
+    font-size: clamp(2.4rem, 10vw, 3.8rem); 
+    margin-bottom: 40px; 
+    line-height: 0.95;
+  }
+  .sec-label {
+    font-size: 0.55rem;
+  }
+  
+  .hero { 
+    min-height: 100vh; 
+    padding: 100px 24px 60px; 
+    justify-content: center;
+  }
+  .glitch { 
+    font-size: clamp(70px, 18vw, 130px); 
+  }
+  .hero-tagline { 
+    font-size: 0.52rem; 
+    letter-spacing: 0.3em; 
+    margin-top: 18px; 
+    line-height: 1.5;
+  }
+  .hero-time { 
+    font-size: 0.5rem; 
+    margin-bottom: 18px; 
+    letter-spacing: 0.25em;
+  }
+  .status-pill { 
+    padding: 12px 24px; 
+    font-size: 0.52rem; 
+    margin-top: 32px; 
+    gap: 8px;
+  }
+  .hero-scroll { 
+    bottom: 30px; 
+  }
+  .hero-scroll span {
+    font-size: 0.5rem;
+  }
+  
+  .about-grid, .tos-grid, .contact-grid { 
+    grid-template-columns: 1fr; 
+  }
+  .about-stat, .about-bio { 
+    padding: 36px 28px; 
+  }
+  .about-stat-n { 
+    font-size: 4.2rem; 
+  }
+  .about-stat-l {
+    font-size: 0.55rem;
+  }
+  .about-bio p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+  .about-time {
+    padding: 16px 20px;
+    margin-top: 24px;
+  }
+  .about-time-val {
+    font-size: 1rem;
+  }
+  
+  .ptabs { 
+    flex-wrap: wrap; 
+    gap: 0;
+  }
+  .ptab { 
+    padding: 14px 18px; 
+    font-size: 0.52rem; 
+    flex: 1 1 auto; 
+    min-width: 100px;
+    text-align: center;
+  }
+  .pgrid { 
+    grid-template-columns: 1fr; 
+  }
+  .pi { 
+    aspect-ratio: 16/10; 
+  }
+  .pi-ov { 
+    opacity: 1; 
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+  }
+  .pi-title {
+    font-size: 0.9rem;
+  }
+  .pi-desc {
+    font-size: 0.7rem;
+  }
+  
+  .exp-row { 
+    grid-template-columns: 1fr; 
+    gap: 14px; 
+    padding: 26px 24px; 
+  }
+  .exp-group {
+    font-size: 1rem;
+  }
+  .exp-role {
+    font-size: 0.55rem;
+  }
+  .exp-badge {
+    font-size: 0.55rem;
+    padding: 6px 12px;
+  }
+  
+  .tos-card { 
+    padding: 36px 28px; 
+  }
+  .tos-icon {
+    font-size: 2rem;
+  }
+  .tos-title {
+    font-size: 0.95rem;
+  }
+  .tos-desc {
+    font-size: 0.82rem;
+  }
+  
+  .queue-box { 
+    grid-template-columns: 1fr; 
+    gap: 28px; 
+    padding: 32px 24px; 
+  }
+  .queue-info {
+    font-size: 0.95rem;
+  }
+  .queue-sub {
+    font-size: 0.78rem;
+  }
+  .queue-slots {
+    justify-content: flex-start;
+  }
+  .q-slot {
+    width: 56px;
+  }
+  
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+  .review-card { 
+    padding: 28px 24px; 
+  }
+  .review-name {
+    font-size: 0.95rem;
+  }
+  .review-text {
+    font-size: 0.85rem;
+  }
+  .slider-nav {
+    padding: 14px 20px;
+  }
+  
+  .c-link { 
+    padding: 28px 24px; 
+    gap: 18px; 
+  }
+  .c-icon { 
+    width: 50px; 
+    height: 50px; 
+    font-size: 1.5rem; 
+  }
+  .c-name {
+    font-size: 0.95rem;
+  }
+  .c-detail {
+    font-size: 0.55rem;
+  }
+  
+  footer { 
+    flex-direction: column; 
+    gap: 14px; 
+    text-align: center; 
+    padding: 32px 24px; 
+  }
+  .f-logo {
+    font-size: 1.8rem;
+  }
+  .f-copy {
+    font-size: 0.52rem;
+  }
+  
+  #mp { 
+    bottom: 20px; 
+    left: 20px; 
+    padding: 12px 18px; 
+    gap: 12px; 
+  }
+  .mp-info { 
+    max-width: 120px;
+    font-size: 0.52rem;
+  }
+  .mp-vol { 
+    display: flex;
+  }
+  .mp-slider {
+    width: 60px;
+  }
+  
+  #toast {
+    bottom: 100px;
+    font-size: 0.55rem;
+    padding: 10px 24px;
+  }
 }
+
 @media (max-width: 480px) {
-  .glitch { font-size: clamp(50px, 18vw, 90px); }
-  .sec-title { font-size: clamp(2rem, 11vw, 3rem); }
-  .about-stat-n { font-size: 3.5rem; }
+  nav {
+    padding: 14px 20px;
+  }
+  
+  .sec {
+    padding: 60px 20px;
+  }
+  
+  .glitch { 
+    font-size: clamp(56px, 16vw, 100px); 
+  }
+  .hero-tagline {
+    font-size: 0.48rem;
+  }
+  .status-pill {
+    padding: 10px 20px;
+    font-size: 0.5rem;
+  }
+  
+  .sec-title { 
+    font-size: clamp(2rem, 10vw, 3rem); 
+  }
+  .about-stat-n { 
+    font-size: 3.6rem; 
+  }
+  .about-stat, .about-bio {
+    padding: 30px 22px;
+  }
+  
+  .ptab {
+    padding: 12px 14px;
+    font-size: 0.5rem;
+    min-width: 90px;
+  }
+  
+  .exp-row {
+    padding: 22px 20px;
+  }
+  
+  .tos-card {
+    padding: 30px 22px;
+  }
+  
+  .queue-box {
+    padding: 28px 20px;
+  }
+  
+  .review-card {
+    padding: 24px 20px;
+  }
+  
+  .c-link {
+    padding: 24px 20px;
+  }
+  
+  #mp {
+    left: 16px;
+    bottom: 16px;
+    padding: 10px 14px;
+  }
+  .mp-info {
+    display: none;
+  }
+  .mp-vol {
+    display: none;
+  }
 }
 </style>
 </head>
@@ -410,7 +673,7 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
     <div class="hero-time rv" id="hero-time">● KL, MY — 00:00 AM</div>
     <div class="glitch rv d1" id="hero-name" data-text="FIYY">FIYY</div>
     <div class="hero-tagline rv d2" id="hero-tag"></div>
-    <div class="status-pill av rv d3" id="status-pill" onclick="toggleStatus()">
+    <div class="status-pill av rv d3" id="status-pill">
       <span class="sdot"></span>
       <span id="status-txt">Open for Commissions</span>
     </div>
@@ -561,10 +824,13 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
 </script>
 
 <script>
+// ═══════════════════════════════════════════
+// CONFIG - Set isAvailable to true or false to change status manually
+// ═══════════════════════════════════════════
 const CONFIG = {
   name: "FIYY",
-  tagline: `<span class="ac">Roblox Dev</span> &mdash; Web Builder &mdash; <span class="ac">Commission Open</span>`,
-  isAvailable: false,
+  tagline: `<span class="ac">Roblox Dev</span> &mdash; Web Builder &mdash; <span class="ac">Available for Work</span>`,
+  isAvailable: true, // ← CHANGE THIS TO true OR false TO SET STATUS
   bgVideo: "bg.mp4",
   music: [{ file: "music.mp3", title: "Lost Soul — NBSPLV" }],
   portfolio: {
@@ -642,7 +908,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function startSite() {
   document.getElementById('enter-screen').classList.add('gone');
-  setTimeout(() => document.getElementById('loader').classList.add('gone'), 1600);
+  
+  // Show loader after enter screen fades
+  const loader = document.getElementById('loader');
+  loader.classList.add('show');
+  
+  // Hide loader after animation completes
+  setTimeout(() => loader.classList.add('gone'), 1600);
+  
   const v = document.getElementById('bg-vid');
   v.src = CONFIG.bgVideo; v.play().catch(() => {});
   if (CONFIG.music.length > 0) {
@@ -681,13 +954,15 @@ function initClock() {
 }
 
 function initStatus() { renderStatus(); }
-function toggleStatus() { isAvailable = !isAvailable; renderStatus(); }
+
 function renderStatus() {
   const pill = document.getElementById('status-pill'), txt = document.getElementById('status-txt');
   if (!pill) return;
-  pill.className = `status-pill ${isAvailable?'av':'bz'} rv in`;
+  pill.className = `status-pill ${isAvailable?'av':'bz'} rv d3`;
   txt.textContent = isAvailable ? 'Open for Commissions' : 'Currently Busy';
-  document.getElementById('nav-status-wrap').innerHTML = `<div class="status-pill ${isAvailable?'av':'bz'}" style="margin:0;padding:6px 16px;font-size:0.58rem" onclick="toggleStatus()"><span class="sdot"></span><span>${isAvailable?'Available':'Busy'}</span></div>`;
+  
+  // Nav status indicator (non-clickable)
+  document.getElementById('nav-status-wrap').innerHTML = `<div class="status-pill ${isAvailable?'av':'bz'}" style="margin:0;padding:6px 16px;font-size:0.58rem;pointer-events:none;"><span class="sdot"></span><span>${isAvailable?'Available':'Busy'}</span></div>`;
 }
 
 function initHero() {
