@@ -624,7 +624,16 @@ const vidObserver = new IntersectionObserver((entries, obs) => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
     const v = entry.target;
-    if (v.dataset.src) { v.src = v.dataset.src; v.load(); }
+    if (!v.dataset.src) return;
+    v.src = v.dataset.src;
+    v.load();
+    v.play().catch(() => {});  
+    v.addEventListener('error', () => {
+      v.closest('.pi').style.background = '#141414';
+      v.style.display = 'none';
+      const badge = v.closest('.pi').querySelector('.pi-vid-badge');
+      if (badge) badge.textContent = '⚠ Failed';
+    }, { once: true });
     obs.unobserve(v);
   });
 }, { rootMargin: '200px 0px' });
@@ -786,8 +795,9 @@ function buildPortfolio(tab) {
 
     let media;
     if (vidSrc) {
-      media = `<video data-src="${vidSrc}" autoplay muted loop playsinline preload="none"
-                      style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+      media = `<video data-src="${vidSrc}" muted loop playsinline preload="none"
+              style="width:100%;height:100%;object-fit:cover;display:block;"
+              oncanplay="this.play().catch(()=>{})"></video>`;
                <div class="pi-vid-badge">▶ MP4</div>`;
     } else {
       media = `<img data-src="${item.image}" alt="${item.title}" class="lazy-pending"
