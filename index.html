@@ -38,15 +38,16 @@ body {
   position: fixed; inset: 0; z-index: 10000;
   background: #000;
   display: flex; align-items: center; justify-content: center;
-  /* FIX: was 0.6s — slowed to match loader fade-in so they crossfade cleanly */
   transition: opacity 0.5s ease;
   cursor: pointer;
+  user-select: none;
 }
 #enter-screen.gone { opacity: 0; pointer-events: none; }
 .enter-text {
   font-family: 'Space Mono', monospace;
   font-size: 0.75rem; letter-spacing: 0.6em; text-transform: uppercase;
   color: var(--c); animation: pulse 2s infinite;
+  pointer-events: none;
 }
 @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
 
@@ -58,18 +59,11 @@ body {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 28px;
-  /*
-   * FIX: was using visibility:hidden which stops the browser painting the
-   * element entirely — so adding .active caused a flash rather than a fade.
-   * Using only opacity + pointer-events means it's always composited, just
-   * invisible, so the transition fires instantly with no gap.
-   */
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
 }
 #loader.active { opacity: 1; pointer-events: all; }
-/* .gone keeps it out of the way after loading finishes */
 #loader.gone   { opacity: 0; pointer-events: none; transition: opacity 0.9s ease; }
 
 .ld-name { font-family: 'Bebas Neue', sans-serif; font-size: 4.5rem; letter-spacing: 0.35em; color: #fff; }
@@ -140,11 +134,7 @@ nav {
 .hero-time .ac { color: var(--c); font-weight: 700; }
 
 /* ─── SECTIONS ─────────────────────────────────────────── */
-.sec {
-  padding: 100px 48px; max-width: 1440px; margin: 0 auto;
-  content-visibility: auto;
-  contain-intrinsic-size: 0 600px;
-}
+.sec { padding: 100px 48px; max-width: 1440px; margin: 0 auto; content-visibility: auto; contain-intrinsic-size: 0 600px; }
 .sec-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.45em; text-transform: uppercase; color: var(--c); margin-bottom: 10px; }
 .sec-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem, 6vw, 5.5rem); line-height: 0.88; letter-spacing: 0.02em; color: #fff; margin-bottom: 60px; }
 .hr { width: 100%; height: 1px; background: var(--bdr); max-width: 1440px; margin: 0 auto; }
@@ -183,15 +173,16 @@ nav {
 .pi:not(:hover) img { transition: transform 0.5s ease, filter 0.4s; }
 .pi video { filter: saturate(0.7) brightness(0.9); }
 .pi:hover video { filter: saturate(1) brightness(1); transition: filter 0.4s; }
-
 .pi img.lazy-pending { opacity: 0; transition: opacity 0.4s; }
 .pi img.lazy-loaded  { opacity: 1; }
-
 .pi-ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0) 55%); display: flex; align-items: flex-end; padding: 24px; opacity: 0; transition: opacity 0.3s; }
 .pi:hover .pi-ov { opacity: 1; }
 .pi-title { font-weight: 800; font-size: 0.95rem; color: #fff; }
 .pi-desc { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 3px; }
 .pi-vid-badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15); font-family: 'Space Mono', monospace; font-size: 0.48rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); padding: 4px 8px; }
+.pi-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.pi-loading::after { content: ''; width: 24px; height: 24px; border: 1px solid rgba(0,240,255,0.2); border-top-color: var(--c); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ─── EXPERIENCE ───────────────────────────────────────── */
 .exp-list { display: flex; flex-direction: column; gap: 1px; background: var(--bdr); border: 1px solid var(--bdr); }
@@ -210,7 +201,6 @@ nav {
 .tos-icon { font-size: 2.2rem; margin-bottom: 20px; }
 .tos-title { font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 10px; }
 .tos-desc { font-size: 0.85rem; line-height: 1.65; color: var(--dim); }
-
 .queue-box { margin-top: 1px; padding: 40px; background: var(--bg); border: 1px solid var(--bdr); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 40px; }
 .queue-label { font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
 .queue-info { font-weight: 700; font-size: 1rem; color: #fff; }
@@ -316,13 +306,11 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
   #mp { bottom: 16px; left: 16px; padding: 12px 16px; gap: 10px; }
   .mp-info, .mp-vol { display: none; }
 }
-
 @media (max-width: 480px) {
   .glitch { font-size: clamp(50px, 18vw, 90px); }
   .sec-title { font-size: clamp(2rem, 11vw, 3rem); }
   .about-stat-n { font-size: 3.5rem; }
 }
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
@@ -330,7 +318,7 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
 </head>
 <body>
 
-<div id="enter-screen" onclick="startSite()">
+<div id="enter-screen">
   <div class="enter-text">[ Click To Enter ]</div>
 </div>
 <div id="loader">
@@ -489,52 +477,53 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
   </footer>
 </div>
 
-<!-- FIREBASE -->
+<!-- ─── FIREBASE ──────────────────────────────────────────── -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-  import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+  import { getFirestore }   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
   import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
   const app = initializeApp({
-    apiKey: "AIzaSyDMKcvkIPuqYrY0VNYWlk7hTbWsM9oI0Qk",
-    authDomain: "fiyy13-portfolio.firebaseapp.com",
-    projectId: "fiyy13-portfolio",
-    storageBucket: "fiyy13-portfolio.appspot.com",
+    apiKey:            "AIzaSyDMKcvkIPuqYrY0VNYWlk7hTbWsM9oI0Qk",
+    authDomain:        "fiyy13-portfolio.firebaseapp.com",
+    projectId:         "fiyy13-portfolio",
+    storageBucket:     "fiyy13-portfolio.appspot.com",
     messagingSenderId: "1090998456947",
-    appId: "1:1090998456947:web:07dd09967558268dca1006"
+    appId:             "1:1090998456947:web:07dd09967558268dca1006"
   });
   window.db   = getFirestore(app);
   window.auth = getAuth(app);
 
   window.adminLogin = async () => {
-    const email    = prompt("Email:");
-    const password = prompt("Password:");
+    const email    = prompt('Email:');
+    const password = prompt('Password:');
     try {
       await signInWithEmailAndPassword(window.auth, email, password);
       copyToast('', 'Logged in as admin');
       loadReviews();
-    } catch (e) { copyToast('', 'Login failed'); }
-  };
-  window.adminLogout = async () => {
-    try { await window.auth.signOut(); copyToast('', 'Logged out'); loadReviews(); }
-    catch (e) { copyToast('', 'Logout failed'); }
+    } catch { copyToast('', 'Login failed'); }
   };
 
+  window.adminLogout = async () => {
+    try { await window.auth.signOut(); copyToast('', 'Logged out'); loadReviews(); }
+    catch { copyToast('', 'Logout failed'); }
+  };
+
+  // Lazy-load reviews only when section scrolls into view
   const reviewsObserver = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      loadReviews();
-      reviewsObserver.disconnect();
-    }
+    if (entries[0].isIntersecting) { loadReviews(); reviewsObserver.disconnect(); }
   }, { rootMargin: '200px' });
   reviewsObserver.observe(document.getElementById('reviews'));
 </script>
 
+<!-- ─── MAIN SCRIPT ───────────────────────────────────────── -->
 <script>
+/* ─── CONFIG ─────────────────────────────────────────────── */
 const CONFIG = {
-  name: "FIYY",
-  tagline: `<span class="ac">Roblox Dev</span> &mdash; Web Builder`,
+  name:        "FIYY",
+  tagline:     '<span class="ac">Roblox Dev</span> &mdash; Web Builder',
   isAvailable: false,
-  bgVideo: "bg.mp4",
+  bgVideo:     "bg.mp4",
   music: [{ file: "music.mp3", title: "Lost Soul — NBSPLV" }],
   portfolio: {
     building: [
@@ -581,7 +570,7 @@ const CONFIG = {
     { icon:"🚫", title:"No Refunds",    desc:"All sales final after delivery." },
   ],
   queueFilled: 1,
-  queueTotal: 1,
+  queueTotal:  1,
   contact: [
     { icon:"💬", name:"Discord", detail:"Hafiyy#5652",    bg:"rgba(88,101,242,0.12)",  action:"link", url:"https://discord.com/users/974636956715720764" },
     { icon:"🎮", name:"Roblox",  detail:"View My Profile",bg:"rgba(255,255,255,0.03)", action:"link", url:"https://www.roblox.com/users/3152056465/profile" },
@@ -590,7 +579,7 @@ const CONFIG = {
   ],
 };
 
-// ─── MUSIC ───────────────────────────────────────────────
+/* ─── MUSIC ───────────────────────────────────────────────── */
 let isPlaying = false, trackIdx = 0;
 const audio    = document.getElementById('bg-audio');
 const volEl    = document.getElementById('mp-vol');
@@ -600,45 +589,75 @@ audio.addEventListener('waiting', () => mpStatus.classList.add('show'));
 audio.addEventListener('canplay', () => mpStatus.classList.remove('show'));
 audio.addEventListener('playing', () => mpStatus.classList.remove('show'));
 audio.addEventListener('stalled', () => mpStatus.classList.add('show'));
-audio.addEventListener('ended', () => {
+audio.addEventListener('ended',   () => {
   trackIdx = (trackIdx + 1) % CONFIG.music.length;
   audio.src = CONFIG.music[trackIdx].file;
   if (isPlaying) audio.play().catch(() => {});
 });
 
-// ─── LAZY LOADERS ────────────────────────────────────────
+/* ─── LAZY IMAGE OBSERVER ────────────────────────────────── */
 const imgObserver = new IntersectionObserver((entries, obs) => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
-    const el  = entry.target;
-    const src = el.dataset.src;
+    const img = entry.target;
+    const src = img.dataset.src;
     if (!src) return;
-    el.src     = src;
-    el.onload  = () => el.classList.replace('lazy-pending', 'lazy-loaded');
-    el.onerror = () => { el.parentElement.style.background = '#141414'; el.style.display = 'none'; };
-    obs.unobserve(el);
+    img.src    = src;
+    img.onload  = () => img.classList.replace('lazy-pending', 'lazy-loaded');
+    img.onerror = () => {
+      img.parentElement.style.background = '#141414';
+      img.style.display = 'none';
+    };
+    obs.unobserve(img);
   });
 }, { rootMargin: '200px 0px' });
 
+/* ─── LAZY VIDEO OBSERVER (FIXED) ───────────────────────── */
+/*
+ * FIX: The autoplay HTML attribute is ignored when src is set dynamically.
+ * After setting src + calling load(), we must explicitly call play().
+ * We also listen for 'canplay' as a safety net in case play() is called
+ * before enough data is buffered.
+ */
 const vidObserver = new IntersectionObserver((entries, obs) => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
     const v = entry.target;
     if (!v.dataset.src) return;
+
+    // Show spinner while buffering
+    const pi = v.closest('.pi');
+    const spinner = document.createElement('div');
+    spinner.className = 'pi-loading';
+    pi.appendChild(spinner);
+
     v.src = v.dataset.src;
-    v.load();
-    v.play().catch(() => {});  
-    v.addEventListener('error', () => {
-      v.closest('.pi').style.background = '#141414';
+    delete v.dataset.src; // prevent double-load on re-observe
+
+    v.addEventListener('canplay', function onCanPlay() {
+      spinner.remove();
+      v.play().catch(() => {});
+      v.removeEventListener('canplay', onCanPlay);
+    });
+
+    v.addEventListener('error', function onErr() {
+      spinner.remove();
+      pi.style.background = '#141414';
       v.style.display = 'none';
-      const badge = v.closest('.pi').querySelector('.pi-vid-badge');
-      if (badge) badge.textContent = '⚠ Failed';
-    }, { once: true });
+      const badge = pi.querySelector('.pi-vid-badge');
+      if (badge) { badge.textContent = '⚠ Failed'; badge.style.color = '#ef4444'; }
+      v.removeEventListener('error', onErr);
+    });
+
+    v.load();
+    // Also attempt play() immediately — browser may already have data
+    v.play().catch(() => {});
+
     obs.unobserve(v);
   });
 }, { rootMargin: '200px 0px' });
 
-// ─── INIT ─────────────────────────────────────────────────
+/* ─── INIT ────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initClock();
@@ -650,38 +669,38 @@ document.addEventListener('DOMContentLoaded', () => {
   buildQueue();
   buildContact();
   initReveal();
-
   document.getElementById('f-year').textContent = `© ${new Date().getFullYear()} — All Rights Reserved`;
   volEl.addEventListener('input', () => { audio.volume = +volEl.value; });
 });
 
-// ─── ENTER / LOADER ──────────────────────────────────────
+/* ─── ENTER SCREEN (FIXED) ────────────────────────────────── */
+/*
+ * FIX: Attach the click listener via JS (not just inline onclick) so it
+ * works even if the inline handler attr is stripped by a browser/extension.
+ * Guard with a `started` flag so double-clicks can't double-fire.
+ */
+let siteStarted = false;
+
 function startSite() {
+  if (siteStarted) return;
+  siteStarted = true;
+
   const enter  = document.getElementById('enter-screen');
   const loader = document.getElementById('loader');
   const bar    = document.getElementById('ld-bar');
 
-  /*
-   * FIX: show loader immediately (opacity 0→1 in 0.25s) then fade enter out.
-   * Previously loader used visibility:hidden so it wasn't painted, causing
-   * a visible flash between the two screens.
-   */
+  // Show loader first, then fade enter screen out
   loader.classList.add('active');
-
-  // Start the progress bar on the next frame so the CSS transition fires
   requestAnimationFrame(() => { bar.style.width = '100%'; });
-
-  // Fade enter out slightly after loader is already visible
   setTimeout(() => enter.classList.add('gone'), 80);
-
-  // Hide loader once bar finishes (~1.4s transition + a bit of breathing room)
   setTimeout(() => loader.classList.add('gone'), 1700);
 
-  // Start bg video and music after user gesture
-  const v = document.getElementById('bg-vid');
-  v.src = CONFIG.bgVideo;
-  v.play().catch(() => {});
+  // Start background video
+  const bgv = document.getElementById('bg-vid');
+  bgv.src = CONFIG.bgVideo;
+  bgv.play().catch(() => {});
 
+  // Start music
   if (CONFIG.music.length > 0) {
     audio.src    = CONFIG.music[0].file;
     audio.volume = +volEl.value;
@@ -696,6 +715,17 @@ function startSite() {
   }
 }
 
+// JS listener as primary handler (more reliable than inline onclick)
+document.getElementById('enter-screen').addEventListener('click', startSite);
+// Keyboard: pressing Space or Enter also triggers it
+document.addEventListener('keydown', e => {
+  if (!siteStarted && (e.code === 'Space' || e.code === 'Enter')) {
+    e.preventDefault();
+    startSite();
+  }
+});
+
+/* ─── MUSIC TOGGLE ───────────────────────────────────────── */
 function toggleMusic() {
   const bars  = document.getElementById('mp-bars');
   const title = document.getElementById('mp-title');
@@ -717,7 +747,7 @@ function toggleMusic() {
   }
 }
 
-// ─── CURSOR ───────────────────────────────────────────────
+/* ─── CURSOR ──────────────────────────────────────────────── */
 function initCursor() {
   if (window.matchMedia('(pointer:coarse)').matches) return;
   const dot  = document.getElementById('cur');
@@ -743,7 +773,7 @@ function initCursor() {
   }, { passive: true });
 }
 
-// ─── CLOCK ────────────────────────────────────────────────
+/* ─── CLOCK ───────────────────────────────────────────────── */
 function initClock() {
   function tick() {
     const t  = new Date().toLocaleTimeString('en-US', { timeZone:'Asia/Kuala_Lumpur', hour12:true, hour:'numeric', minute:'2-digit' });
@@ -756,17 +786,17 @@ function initClock() {
   setInterval(tick, 30000);
 }
 
-// ─── STATUS / HERO ────────────────────────────────────────
+/* ─── STATUS / HERO ──────────────────────────────────────── */
 function renderStatus() {
   const av   = CONFIG.isAvailable;
   const pill = document.getElementById('status-pill');
   const txt  = document.getElementById('status-txt');
   if (!pill) return;
-  pill.className = `status-pill ${av ? 'av' : 'bz'} rv in`;
-  txt.textContent = av ? 'Available' : 'Busy';
+  pill.className    = `status-pill ${av ? 'av' : 'bz'} rv in`;
+  txt.textContent   = av ? 'Available' : 'Busy';
   document.getElementById('nav-status-wrap').innerHTML =
     `<div class="status-pill ${av?'av':'bz'}" style="margin:0;padding:6px 16px;font-size:0.58rem">
-       <span class="sdot"></span><span>${av?'Available':'Busy'}</span>
+       <span class="sdot"></span><span>${av ? 'Available' : 'Busy'}</span>
      </div>`;
 }
 
@@ -777,7 +807,7 @@ function initHero() {
   document.getElementById('hero-tag').innerHTML = CONFIG.tagline;
 }
 
-// ─── PORTFOLIO ────────────────────────────────────────────
+/* ─── PORTFOLIO ───────────────────────────────────────────── */
 function switchTab(btn, tab) {
   document.querySelectorAll('.ptab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
@@ -789,15 +819,13 @@ function buildPortfolio(tab) {
   const grid  = document.getElementById('pgrid');
 
   grid.innerHTML = items.map(item => {
-    // FIX: item.video is the explicit key, but some items (cit.mp4, shop.mp4)
-    // were using item.image with an .mp4 path — detect both cases.
     const vidSrc = item.video || (item.image && /\.mp4$/i.test(item.image) ? item.image : null);
-
     let media;
+
     if (vidSrc) {
+      // NOTE: no autoplay attr — play() is called explicitly in vidObserver after load
       media = `<video data-src="${vidSrc}" muted loop playsinline preload="none"
-              style="width:100%;height:100%;object-fit:cover;display:block;"
-              oncanplay="this.play().catch(()=>{})"></video>`;
+                      style="width:100%;height:100%;object-fit:cover;display:block;"></video>
                <div class="pi-vid-badge">▶ MP4</div>`;
     } else {
       media = `<img data-src="${item.image}" alt="${item.title}" class="lazy-pending"
@@ -815,24 +843,24 @@ function buildPortfolio(tab) {
   }).join('');
 
   grid.querySelectorAll('img.lazy-pending').forEach(img => imgObserver.observe(img));
-  grid.querySelectorAll('video[data-src]').forEach(vid => vidObserver.observe(vid));
-
+  grid.querySelectorAll('video[data-src]').forEach(vid  => vidObserver.observe(vid));
   setTimeout(initReveal, 50);
 }
 
-// ─── EXPERIENCE / TOS / QUEUE / CONTACT ──────────────────
+/* ─── EXPERIENCE ─────────────────────────────────────────── */
 function buildExperience() {
   document.getElementById('exp-list').innerHTML = CONFIG.experience.map((e, i) =>
-    `<div class="exp-row rv" style="transition-delay:${i*0.07}s">
+    `<div class="exp-row rv" style="transition-delay:${i * 0.07}s">
        <div><div class="exp-group">${e.group}</div><div class="exp-role">${e.role}</div></div>
        <div class="exp-badge">${e.members}</div>
      </div>`
   ).join('');
 }
 
+/* ─── TOS ────────────────────────────────────────────────── */
 function buildTOS() {
   document.getElementById('tos-grid').innerHTML = CONFIG.tos.map((t, i) =>
-    `<div class="tos-card rv" style="transition-delay:${i*0.1}s">
+    `<div class="tos-card rv" style="transition-delay:${i * 0.1}s">
        <div class="tos-icon">${t.icon}</div>
        <div class="tos-title">${t.title}</div>
        <div class="tos-desc">${t.desc}</div>
@@ -840,6 +868,7 @@ function buildTOS() {
   ).join('');
 }
 
+/* ─── QUEUE ──────────────────────────────────────────────── */
 function buildQueue() {
   const { queueFilled, queueTotal } = CONFIG;
   document.getElementById('queue-info').textContent = `${queueFilled} / ${queueTotal} Slots Occupied`;
@@ -848,12 +877,13 @@ function buildQueue() {
     .map((_, i) => `<div class="q-slot ${i < queueFilled ? 'on' : ''}"></div>`).join('');
 }
 
+/* ─── CONTACT ────────────────────────────────────────────── */
 function buildContact() {
   document.getElementById('contact-grid').innerHTML = CONFIG.contact.map((c, i) => {
     const action = c.action === 'copy'
       ? `copyToast('${c.url}','${c.name} Copied!')`
       : `window.open('${c.url}','_blank')`;
-    return `<div class="c-link rv" style="transition-delay:${i*0.08}s;background:${c.bg||'var(--bg)'}" onclick="${action}">
+    return `<div class="c-link rv" style="transition-delay:${i * 0.08}s;background:${c.bg || 'var(--bg)'}" onclick="${action}">
       <div class="c-icon">${c.icon}</div>
       <div><div class="c-name">${c.name}</div><div class="c-detail">${c.detail}</div></div>
       <div class="c-arr">↗</div>
@@ -861,15 +891,17 @@ function buildContact() {
   }).join('');
 }
 
-// ─── REVEAL ───────────────────────────────────────────────
+/* ─── SCROLL REVEAL ──────────────────────────────────────── */
 function initReveal() {
   const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
   }, { threshold: 0.08 });
   document.querySelectorAll('.rv:not(.in)').forEach(el => obs.observe(el));
 }
 
-// ─── TOAST ────────────────────────────────────────────────
+/* ─── TOAST ──────────────────────────────────────────────── */
 function copyToast(text, msg) {
   if (text) navigator.clipboard.writeText(text).catch(() => {});
   const t = document.getElementById('toast');
@@ -878,7 +910,7 @@ function copyToast(text, msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// ─── REVIEWS ──────────────────────────────────────────────
+/* ─── REVIEWS ────────────────────────────────────────────── */
 let reviews = [], currentSlide = 0, slideInterval = null;
 
 async function loadReviews() {
@@ -888,7 +920,7 @@ async function loadReviews() {
     const snap = await getDocs(q);
     reviews    = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderReviews();
-  } catch (err) {
+  } catch {
     document.getElementById('no-reviews').textContent = 'Could not load reviews.';
   }
 }
@@ -908,7 +940,7 @@ function renderReviews() {
   noEl.style.display = 'none';
 
   if (reviews.length <= 3) {
-    gridEl.style.display = 'grid';
+    gridEl.style.display   = 'grid';
     sliderEl.style.display = navEl.style.display = 'none';
     gridEl.innerHTML = reviews.map(r => cardHtml(r)).join('');
   } else {
@@ -917,7 +949,7 @@ function renderReviews() {
     navEl.style.display    = 'flex';
     sliderEl.innerHTML = reviews.map(r => cardHtml(r, true)).join('');
     document.getElementById('slider-dots').innerHTML = reviews.map((_, i) =>
-      `<div class="slider-dot ${i===0?'active':''}" onclick="goToSlide(${i})"></div>`
+      `<div class="slider-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`
     ).join('');
     currentSlide = 0;
     startSlider();
@@ -928,10 +960,10 @@ function cardHtml(r, isSlider = false) {
   const date  = r.timestamp
     ? new Date(r.timestamp.seconds * 1000).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
     : 'Just now';
-  const stars = '⭐'.repeat(r.rating);
+  const stars   = '⭐'.repeat(r.rating);
   const isAdmin = window.auth && window.auth.currentUser != null;
-  const del   = isAdmin ? `<button class="delete-btn" onclick="deleteReview('${r.id}')">Delete</button>` : '';
-  const w     = isSlider ? `min-width:min(400px, 100vw - 40px);` : '';
+  const del     = isAdmin ? `<button class="delete-btn" onclick="deleteReview('${r.id}')">Delete</button>` : '';
+  const w       = isSlider ? 'min-width:min(400px, 100vw - 40px);' : '';
   return `<div class="review-card" style="${w}">${del}
     <div class="review-header"><div class="review-name">${esc(r.name)}</div><div class="review-stars">${stars}</div></div>
     <div class="review-text">${esc(r.feedback)}</div>
@@ -961,7 +993,7 @@ async function deleteReview(id) {
     await deleteDoc(doc(window.db, 'reviews', id));
     copyToast('', 'Deleted!');
     loadReviews();
-  } catch (err) { copyToast('', 'Failed to delete'); }
+  } catch { copyToast('', 'Failed to delete'); }
 }
 
 function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
