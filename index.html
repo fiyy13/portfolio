@@ -184,6 +184,133 @@ nav {
 .pi-loading::after { content: ''; width: 24px; height: 24px; border: 1px solid rgba(0,240,255,0.2); border-top-color: var(--c); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ─── FOR SALE BADGE ───────────────────────────────────── */
+.pi-sale-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.55);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.46rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--c);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(6px);
+  user-select: none;
+}
+.pi-sale-badge:hover {
+  background: rgba(0, 240, 255, 0.14);
+  border-color: var(--c);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);
+}
+.pi-sale-badge:active {
+  transform: scale(0.96);
+}
+.pi-sale-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 7px var(--c);
+  animation: sdot-pulse 1.6s infinite;
+  flex-shrink: 0;
+}
+
+/* ─── FOR SALE GLOBAL TOOLTIP ──────────────────────────── */
+#sale-tip {
+  position: fixed;
+  z-index: 9980;
+  width: 240px;
+  background: rgba(3, 3, 3, 0.97);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  padding: 0;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), 0 8px 32px rgba(0,0,0,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.97);
+  transition: opacity 0.22s cubic-bezier(0.16,1,0.3,1),
+              transform 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+#sale-tip.show {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+/* top accent bar */
+#sale-tip::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(to right, var(--c), transparent);
+}
+.sale-tip-inner {
+  padding: 16px 18px 18px;
+}
+.sale-tip-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--c);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.sale-tip-label::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 7px var(--c);
+  flex-shrink: 0;
+}
+.sale-tip-msg {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.72);
+}
+.sale-tip-msg strong {
+  color: #fff;
+  font-weight: 700;
+}
+.sale-tip-arrow {
+  display: block;
+  margin-top: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c);
+  opacity: 0.7;
+}
+/* small dismiss button */
+.sale-tip-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--dim);
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 2px 4px;
+  transition: color 0.15s;
+}
+.sale-tip-close:hover { color: #fff; }
+
 /* ─── EXPERIENCE ───────────────────────────────────────── */
 .exp-list { display: flex; flex-direction: column; gap: 1px; background: var(--bdr); border: 1px solid var(--bdr); }
 .exp-row { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 28px 36px; background: var(--bg); transition: background 0.2s; position: relative; overflow: hidden; }
@@ -305,6 +432,8 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
   footer { flex-direction: column; gap: 12px; text-align: center; padding: 28px 20px; }
   #mp { bottom: 16px; left: 16px; padding: 12px 16px; gap: 10px; }
   .mp-info, .mp-vol { display: none; }
+  /* Sale tooltip full-width on mobile */
+  #sale-tip { width: calc(100vw - 32px); left: 16px !important; }
 }
 @media (max-width: 480px) {
   .glitch { font-size: clamp(50px, 18vw, 90px); }
@@ -331,6 +460,19 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
 <div id="cur"></div>
 <div id="cur-r"></div>
 <div class="ticker"></div>
+
+<!-- ─── GLOBAL FOR SALE TOOLTIP ──────────────────────────── -->
+<div id="sale-tip">
+  <button class="sale-tip-close" onclick="hideSaleTip()" aria-label="Close">✕</button>
+  <div class="sale-tip-inner">
+    <div class="sale-tip-label">For Sale</div>
+    <div class="sale-tip-msg">
+      Interested in this work?<br>
+      <strong>Contact me via Discord</strong> below to discuss pricing and availability.
+    </div>
+    <span class="sale-tip-arrow">↓ Discord button below</span>
+  </div>
+</div>
 
 <div id="vbg">
   <div id="vbg-fallback"></div>
@@ -409,10 +551,10 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
   <section class="sec" id="portfolio">
     <div class="sec-label rv">002 — Portfolio</div>
     <div class="sec-title rv">My<br>Work.</div>
+    <!-- Website category removed -->
     <div class="ptabs rv" id="ptabs">
       <button class="ptab" onclick="switchTab(this,'building')">Building</button>
       <button class="ptab on" onclick="switchTab(this,'scripting')">Scripting</button>
-      <button class="ptab" onclick="switchTab(this,'website')">Website</button>
       <button class="ptab" onclick="switchTab(this,'graphic')">Graphic</button>
     </div>
     <div class="pgrid" id="pgrid"></div>
@@ -509,7 +651,6 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
     catch { copyToast('', 'Logout failed'); }
   };
 
-  // Lazy-load reviews only when section scrolls into view
   const reviewsObserver = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) { loadReviews(); reviewsObserver.disconnect(); }
   }, { rootMargin: '200px' });
@@ -527,34 +668,31 @@ const CONFIG = {
   music: [{ file: "music.mp3", title: "Lost Soul — NBSPLV" }],
   portfolio: {
     building: [
-      { title:"MCOnet Project",   description:"A map based on Monaco",           image:"portfolio/building/monaco.webp" },
-      { title:"UK House",         description:"A filler building",                image:"portfolio/building/UK.webp" },
-      { title:"Monaco Court",     description:"1:1 Replica of the Monaco court", image:"portfolio/building/Court.webp" },
-      { title:"Cozy Cafe",        description:"Unfinished Cafe",                  image:"portfolio/building/cafe.webp" },
-      { title:"Airport Signs",    description:"Not a building",                   image:"portfolio/building/signs.webp" },
-      { title:"Melaka Church",    description:"1:1 Replica",                      image:"portfolio/building/church.webp" },
-      { title:"CQB",              description:"Training ground",                  image:"portfolio/building/cqb.webp" },
-      { title:"National Council", description:"1:1 Replica",                      image:"portfolio/building/nc.webp" },
+      { title:"MCOnet Project",   description:"A map based on Monaco",           image:"portfolio/building/monaco.webp",  forSale: false },
+      { title:"UK House",         description:"A filler building",                image:"portfolio/building/UK.webp",      forSale: false },
+      { title:"Monaco Court",     description:"1:1 Replica of the Monaco court", image:"portfolio/building/Court.webp",   forSale: false  },
+      { title:"Cozy Cafe",        description:"Unfinished Cafe",                  image:"portfolio/building/cafe.webp",    forSale: false  },
+      { title:"Airport Signs",    description:"Not a building",                   image:"portfolio/building/signs.webp",   forSale: false },
+      { title:"Melaka Church",    description:"1:1 Replica",                      image:"portfolio/building/church.webp",  forSale: false  },
+      { title:"CQB",              description:"Training ground",                  image:"portfolio/building/cqb.webp",     forSale: false },
+      { title:"National Council", description:"1:1 Replica",                      image:"portfolio/building/nc.webp",      forSale: false },
     ],
     scripting: [
-      { title:"Car Dealership",      description:"Advanced V1",                       image:"portfolio/scripting/dealer.webp" },
-      { title:"Radio System",        description:"Radio with animation",              image:"portfolio/scripting/radio.webp" },
-      { title:"Bank Robbery",        description:"Two-method robbery",                image:"portfolio/scripting/br.webp" },
-      { title:"Citation System",     description:"Realistic citation",                video:"portfolio/scripting/citation.mp4" },
-      { title:"Side Menu",           description:"Equipment changer",                 image:"portfolio/scripting/menu.webp" },
-      { title:"Report System",       description:"Mod call / Bug report",             image:"portfolio/scripting/report.webp" },
-      { title:"Football Scoreboard", description:"LIGA SUPER animated",               image:"portfolio/scripting/football.webp" },
-      { title:"Store UI",            description:"Cool animated UI to buy tools",     video:"portfolio/scripting/shop.mp4" },
-      { title:"Props Placement",     description:"Placement for cones, border, etc.", video:"portfolio/scripting/placement.mp4" },
-    ],
-    website: [
-      { title:"MCOnet Government", description:"Government dashboard", image:"portfolio/website/gov.webp" },
+      { title:"Radio System",        description:"Radio with animation",              image:"portfolio/scripting/radio.webp",     forSale: true  },
+      { title:"Bank Robbery",        description:"Two-method robbery",                image:"portfolio/scripting/br.webp",        forSale: true  },
+      { title:"Citation System",     description:"Realistic citation",                video:"portfolio/scripting/citation.mp4",   forSale: true  },
+      { title:"Props Placement",     description:"Placement for cones, border, etc.", video:"portfolio/scripting/placement.mp4",  forSale: true  },
+      { title:"Car Dealership",      description:"Advanced V1",                       image:"portfolio/scripting/dealer.webp",    forSale: false  },
+      { title:"Side Menu",           description:"Equipment changer",                 image:"portfolio/scripting/menu.webp",      forSale: false },
+      { title:"Report System",       description:"Mod call / Bug report",             image:"portfolio/scripting/report.webp",    forSale: false },
+      { title:"Football Scoreboard", description:"LIGA SUPER animated",               image:"portfolio/scripting/football.webp",  forSale: false  },
+      { title:"Store UI",            description:"Cool animated UI to buy tools",     video:"portfolio/scripting/shop.mp4",       forSale: false  },
     ],
     graphic: [
-      { title:"HAZMAT Poster",      description:"Fire corps ad",   image:"portfolio/graphic/fire.webp" },
-      { title:"Firefighter Poster", description:"Fire corps ad",   image:"portfolio/graphic/fire1.webp" },
-      { title:"UTK Poster",         description:"Free time work",  image:"portfolio/graphic/utk.webp" },
-      { title:"Detective vibe",     description:"School homework", image:"portfolio/graphic/school.webp" },
+      { title:"HAZMAT Poster",      description:"Fire corps ad",   image:"portfolio/graphic/fire.webp",    forSale: false },
+      { title:"Firefighter Poster", description:"Fire corps ad",   image:"portfolio/graphic/fire1.webp",   forSale: false },
+      { title:"UTK Poster",         description:"Free time work",  image:"portfolio/graphic/utk.webp",     forSale: false },
+      { title:"Detective vibe",     description:"School homework", image:"portfolio/graphic/school.webp",  forSale: false },
     ],
   },
   experience: [
@@ -612,27 +750,20 @@ const imgObserver = new IntersectionObserver((entries, obs) => {
   });
 }, { rootMargin: '200px 0px' });
 
-/* ─── LAZY VIDEO OBSERVER (FIXED) ───────────────────────── */
-/*
- * FIX: The autoplay HTML attribute is ignored when src is set dynamically.
- * After setting src + calling load(), we must explicitly call play().
- * We also listen for 'canplay' as a safety net in case play() is called
- * before enough data is buffered.
- */
+/* ─── LAZY VIDEO OBSERVER ────────────────────────────────── */
 const vidObserver = new IntersectionObserver((entries, obs) => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
     const v = entry.target;
     if (!v.dataset.src) return;
 
-    // Show spinner while buffering
     const pi = v.closest('.pi');
     const spinner = document.createElement('div');
     spinner.className = 'pi-loading';
     pi.appendChild(spinner);
 
     v.src = v.dataset.src;
-    delete v.dataset.src; // prevent double-load on re-observe
+    delete v.dataset.src;
 
     v.addEventListener('canplay', function onCanPlay() {
       spinner.remove();
@@ -650,9 +781,7 @@ const vidObserver = new IntersectionObserver((entries, obs) => {
     });
 
     v.load();
-    // Also attempt play() immediately — browser may already have data
     v.play().catch(() => {});
-
     obs.unobserve(v);
   });
 }, { rootMargin: '200px 0px' });
@@ -669,16 +798,12 @@ document.addEventListener('DOMContentLoaded', () => {
   buildQueue();
   buildContact();
   initReveal();
+  initSaleTip();
   document.getElementById('f-year').textContent = `© ${new Date().getFullYear()} — All Rights Reserved`;
   volEl.addEventListener('input', () => { audio.volume = +volEl.value; });
 });
 
-/* ─── ENTER SCREEN (FIXED) ────────────────────────────────── */
-/*
- * FIX: Attach the click listener via JS (not just inline onclick) so it
- * works even if the inline handler attr is stripped by a browser/extension.
- * Guard with a `started` flag so double-clicks can't double-fire.
- */
+/* ─── ENTER SCREEN ────────────────────────────────────────── */
 let siteStarted = false;
 
 function startSite() {
@@ -689,18 +814,15 @@ function startSite() {
   const loader = document.getElementById('loader');
   const bar    = document.getElementById('ld-bar');
 
-  // Show loader first, then fade enter screen out
   loader.classList.add('active');
   requestAnimationFrame(() => { bar.style.width = '100%'; });
   setTimeout(() => enter.classList.add('gone'), 80);
   setTimeout(() => loader.classList.add('gone'), 1700);
 
-  // Start background video
   const bgv = document.getElementById('bg-vid');
   bgv.src = CONFIG.bgVideo;
   bgv.play().catch(() => {});
 
-  // Start music
   if (CONFIG.music.length > 0) {
     audio.src    = CONFIG.music[0].file;
     audio.volume = +volEl.value;
@@ -715,9 +837,7 @@ function startSite() {
   }
 }
 
-// JS listener as primary handler (more reliable than inline onclick)
 document.getElementById('enter-screen').addEventListener('click', startSite);
-// Keyboard: pressing Space or Enter also triggers it
 document.addEventListener('keydown', e => {
   if (!siteStarted && (e.code === 'Space' || e.code === 'Enter')) {
     e.preventDefault();
@@ -769,7 +889,7 @@ function initCursor() {
   })();
 
   document.addEventListener('mouseover', e => {
-    document.body.classList.toggle('hovering', !!e.target.closest('a,button,.pi,.c-link,.ptab,.slider-arrow'));
+    document.body.classList.toggle('hovering', !!e.target.closest('a,button,.pi,.c-link,.ptab,.slider-arrow,.pi-sale-badge'));
   }, { passive: true });
 }
 
@@ -823,7 +943,6 @@ function buildPortfolio(tab) {
     let media;
 
     if (vidSrc) {
-      // NOTE: no autoplay attr — play() is called explicitly in vidObserver after load
       media = `<video data-src="${vidSrc}" muted loop playsinline preload="none"
                       style="width:100%;height:100%;object-fit:cover;display:block;"></video>
                <div class="pi-vid-badge">▶ MP4</div>`;
@@ -832,7 +951,14 @@ function buildPortfolio(tab) {
                     width="320" height="200" decoding="async">`;
     }
 
-    return `<div class="pi rv">${media}
+    // FOR SALE badge — only rendered when forSale is true
+    const saleBadge = item.forSale
+      ? `<div class="pi-sale-badge" onclick="toggleSaleTip(event, this)">
+           <span class="pi-sale-dot"></span>For Sale
+         </div>`
+      : '';
+
+    return `<div class="pi rv">${media}${saleBadge}
       <div class="pi-ov">
         <div>
           <div class="pi-title">${item.title}</div>
@@ -908,6 +1034,71 @@ function copyToast(text, msg) {
   t.textContent = msg || 'Copied!';
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ─── FOR SALE TOOLTIP ───────────────────────────────────── */
+let _activeBadge = null;
+
+function initSaleTip() {
+  // Dismiss tooltip on outside click
+  document.addEventListener('click', e => {
+    const tip = document.getElementById('sale-tip');
+    if (!tip.contains(e.target) && !e.target.classList.contains('pi-sale-badge') && !e.target.closest('.pi-sale-badge')) {
+      hideSaleTip();
+    }
+  });
+  // Reposition on scroll / resize
+  window.addEventListener('scroll', repositionTip, { passive: true });
+  window.addEventListener('resize', repositionTip, { passive: true });
+}
+
+function toggleSaleTip(e, badge) {
+  e.stopPropagation();
+  const tip = document.getElementById('sale-tip');
+  if (_activeBadge === badge && tip.classList.contains('show')) {
+    hideSaleTip();
+    return;
+  }
+  _activeBadge = badge;
+  positionTip(badge);
+  tip.classList.add('show');
+}
+
+function hideSaleTip() {
+  document.getElementById('sale-tip').classList.remove('show');
+  _activeBadge = null;
+}
+
+function positionTip(badge) {
+  const tip  = document.getElementById('sale-tip');
+  const rect = badge.getBoundingClientRect();
+  const vw   = window.innerWidth;
+  const tipW = Math.min(240, vw - 32);
+
+  tip.style.width = tipW + 'px';
+
+  // Default: open below the badge
+  let top  = rect.bottom + 8;
+  let left = rect.left;
+
+  // Clamp horizontally so it doesn't overflow viewport
+  if (left + tipW > vw - 12) left = vw - tipW - 12;
+  if (left < 12) left = 12;
+
+  // If too close to bottom, open above
+  const tipH = 130; // approx height
+  if (top + tipH > window.innerHeight - 12) {
+    top = rect.top - tipH - 8;
+  }
+
+  tip.style.top  = top  + 'px';
+  tip.style.left = left + 'px';
+}
+
+function repositionTip() {
+  if (_activeBadge && document.getElementById('sale-tip').classList.contains('show')) {
+    positionTip(_activeBadge);
+  }
 }
 
 /* ─── REVIEWS ────────────────────────────────────────────── */
