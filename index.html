@@ -77,8 +77,20 @@ body {
 body.hovering #cur { transform: scale(3.5); background: var(--c2); box-shadow: 0 0 14px var(--c2), 0 0 28px rgba(156,28,20,0.4); }
 body.hovering #cur-r { transform: scale(1.6); border-color: rgba(156,28,20,0.7); }
 
-/* HALFTONE / GRAIN BG (replaces video) */
+/* HALFTONE / GRAIN BG */
 #vbg { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #050403; }
+#vbg-photo {
+  position: absolute; inset: -10%;
+  width: 120%; height: 120%;
+  object-fit: cover;
+  object-position: center;
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 0%, transparent 72%);
+          mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 0%, transparent 72%);
+  filter: saturate(0.65) brightness(0.55) contrast(1.1);
+  animation: bg-shift 26s ease-in-out infinite alternate;
+  display: none;
+}
+#vbg-photo.loaded { display: block; }
 #vbg-fallback {
   position: absolute; inset: -10%;
   background-image:
@@ -439,6 +451,7 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
 </div>
 
 <div id="vbg">
+  <img id="vbg-photo" alt="">
   <div id="vbg-fallback"></div>
   <div id="vbg-grain"></div>
 </div>
@@ -649,6 +662,17 @@ const CONFIG = {
   name:        "FIYY",
   tagline:     '<span class="ac">Roblox Dev</span> &nbsp; Scripting &amp; Building',
   isAvailable: true,
+
+  /* ================================================================
+     BACKGROUND IMAGE
+     Point this at your own image. Works with a GitHub-hosted file:
+       - Same repo, relative path:  "assets/bg.png"
+       - Raw GitHub URL:            "https://raw.githubusercontent.com/USER/REPO/main/bg.png"
+       - GitHub Pages URL:          "https://USER.github.io/REPO/bg.png"
+     Leave as "" (empty string) to use the default dot/grain pattern instead.
+  ================================================================ */
+  backgroundImage: "bg.png",
+
   portfolio: {
     building: [
       { title:"MCOnet Project",   description:"A map based on Monaco",           image:"portfolio/building/monaco.webp",  forSale: false },
@@ -761,6 +785,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initClock();
   renderStatus();
   initHero();
+  initBackground();
   buildPortfolio('scripting');
   buildExperience();
   buildTOS();
@@ -770,6 +795,25 @@ document.addEventListener('DOMContentLoaded', () => {
   initSaleTip();
   document.getElementById('f-year').textContent = '\u00A9 ' + new Date().getFullYear() + ' All Rights Reserved';
 });
+
+/* BACKGROUND IMAGE */
+function initBackground() {
+  const photo = document.getElementById('vbg-photo');
+  const path  = (CONFIG.backgroundImage || '').trim();
+
+  if (!path) return; // no image configured, keep the default dot pattern
+
+  photo.onload = () => {
+    photo.classList.add('loaded');
+    document.getElementById('vbg-fallback').style.display = 'none';
+  };
+  photo.onerror = () => {
+    // couldn't load the custom image, fall back to the built-in pattern silently
+    photo.classList.remove('loaded');
+    document.getElementById('vbg-fallback').style.display = 'block';
+  };
+  photo.src = path;
+}
 
 /* ENTER SCREEN */
 let siteStarted = false;
