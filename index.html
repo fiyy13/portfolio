@@ -167,11 +167,6 @@ nav {
 /* HERO */
 .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 24px; position: relative; }
 .glitch { font-family: 'Butcherman', cursive; font-weight: 400; font-size: clamp(80px, 13vw, 190px); line-height: 0.9; color: #fff; position: relative; letter-spacing: 0; user-select: none; }
-.glitch::before, .glitch::after { content: attr(data-text); position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
-.glitch::before { color: var(--c); animation: gx1 5s infinite; clip-path: polygon(0 0, 100% 0, 100% 42%, 0 42%); opacity: 0.75; }
-.glitch::after  { color: var(--c2); animation: gx2 5s infinite; clip-path: polygon(0 58%, 100% 58%, 100% 100%, 0 100%); opacity: 0.75; }
-@keyframes gx1 { 0%,88%,100%{transform:none} 90%{transform:translate(-5px,1px) skewX(-1deg)} 92%{transform:translate(5px,-2px) skewX(1deg)} 94%{transform:translate(-2px,1px)} }
-@keyframes gx2 { 0%,85%,100%{transform:none} 87%{transform:translate(5px,-1px) skewX(1deg)} 89%{transform:translate(-4px,2px) skewX(-1deg)} 92%{transform:translate(2px,-1px)} }
 .hero-tagline { font-family: 'Space Mono', monospace; font-size: clamp(0.62rem, 1.2vw, 0.78rem); letter-spacing: 0.45em; text-transform: uppercase; color: var(--dim); margin-top: 20px; }
 .hero-tagline .ac { color: var(--c); }
 
@@ -394,7 +389,6 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
   nav { backdrop-filter: none; background: rgba(3,3,3,0.95); }
   #mp  { backdrop-filter: none; background: rgba(3,3,3,0.98); }
   .scanlines, .vignette, .ticker { display: none; }
-  .glitch::before, .glitch::after { display: none; }
   nav { padding: 14px 20px; }
   .nav-logo { font-size: 1.4rem; }
   .nav-links, #nav-status-wrap { display: none; }
