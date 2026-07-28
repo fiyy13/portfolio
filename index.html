@@ -729,8 +729,8 @@ const CONFIG = {
     { icon:"&#x2705;",  title:"Trust First",   desc:"Payment only after satisfaction." },
     { icon:"&#x1F6AB;", title:"No Refunds",    desc:"All sales final after delivery." },
   ],
-  queueFilled: 0,
-  queueTotal:  1,
+  queueFilled: 1,
+  queueTotal:  3,
   contact: [
     { icon:"&#x1F4AC;", name:"Discord", detail:"Hafiyy#5652",     bg:"rgba(233,228,214,0.035)",  action:"link", url:"https://discord.com/users/974636956715720764" },
     { icon:"&#x1F3AE;", name:"Roblox",  detail:"View My Profile", bg:"rgba(255,255,255,0.02)", action:"link", url:"https://www.roblox.com/users/3152056465/profile" },
@@ -814,14 +814,13 @@ function initBackground() {
   const photo = document.getElementById('vbg-photo');
   const path  = (CONFIG.backgroundImage || '').trim();
 
-  if (!path) return; // no image configured, keep the default dot pattern
+  if (!path) return; 
 
   photo.onload = () => {
     photo.classList.add('loaded');
     document.getElementById('vbg-fallback').style.display = 'none';
   };
   photo.onerror = () => {
-    // couldn't load the custom image, fall back to the built-in pattern silently
     photo.classList.remove('loaded');
     document.getElementById('vbg-fallback').style.display = 'block';
   };
