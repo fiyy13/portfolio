@@ -100,6 +100,9 @@ body.hovering #cur-r { border-color: rgba(156,28,20,0.7); }
           mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 0%, transparent 72%);
   filter: saturate(0.65) brightness(0.55) contrast(1.1);
   animation: bg-shift 26s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translate3d(0,0,0);
   display: none;
 }
 #vbg-photo.loaded { display: block; }
@@ -111,6 +114,9 @@ body.hovering #cur-r { border-color: rgba(156,28,20,0.7); }
   -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 0%, transparent 72%);
           mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, #000 0%, transparent 72%);
   animation: bg-shift 26s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translate3d(0,0,0);
 }
 #vbg-grain {
   position: absolute; inset: 0;
@@ -118,7 +124,7 @@ body.hovering #cur-r { border-color: rgba(156,28,20,0.7); }
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
 }
 #vbg::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.95) 100%); }
-@keyframes bg-shift { from { opacity: 0.55; transform: translateY(0); } to { opacity: 0.95; transform: translateY(-14px); } }
+@keyframes bg-shift { from { opacity: 0.55; transform: translate3d(0,0,0); } to { opacity: 0.95; transform: translate3d(0,-14px,0); } }
 
 /* GRAVEYARD SCENE (disabled — using custom background image instead) */
 #scene {
@@ -155,8 +161,11 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 18px 48px;
   backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   background: rgba(3,3,3,0.6);
   border-bottom: 1px solid var(--bdr);
+  isolation: isolate;
+  transform: translateZ(0);
 }
 .nav-logo { font-family: 'Butcherman', cursive; font-weight: 400; font-size: 1.5rem; letter-spacing: 0.04em; color: var(--c); text-shadow: 0 0 18px rgba(233,228,214,0.35); }
 .nav-links { display: flex; gap: 36px; list-style: none; }
@@ -255,6 +264,7 @@ nav {
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   user-select: none;
 }
 .pi-sale-badge:hover {
@@ -342,11 +352,17 @@ nav {
 .q-slot { width: 64px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.08); }
 .q-slot.on { background: var(--c); box-shadow: 0 0 10px var(--c); }
 
-/* REVIEWS */
+/* REVIEWS — continuous auto-scrolling marquee */
 .reviews-container { position: relative; overflow: hidden; border: 1px solid var(--bdr); }
 .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1px; background: var(--bdr); }
-.reviews-slider { display: flex; transition: transform 0.5s ease; }
-.review-card { background: var(--bg); padding: 32px; position: relative; transition: background 0.2s; }
+.reviews-slider { display: flex; gap: 1px; will-change: transform; }
+.reviews-slider.auto-scroll { animation: reviews-marquee linear infinite; }
+.reviews-container:hover .reviews-slider.auto-scroll { animation-play-state: paused; }
+@keyframes reviews-marquee {
+  from { transform: translate3d(0,0,0); }
+  to   { transform: translate3d(-50%,0,0); }
+}
+.review-card { background: var(--bg); padding: 32px; position: relative; transition: background 0.2s; min-width: 340px; max-width: 340px; flex-shrink: 0; }
 .review-card:hover { background: var(--bg2); }
 .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .review-name { font-weight: 800; font-size: 1rem; color: #fff; }
@@ -356,13 +372,6 @@ nav {
 .delete-btn { position: absolute; top: 12px; right: 12px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; padding: 5px 10px; font-family: 'Space Mono', monospace; font-size: 0.52rem; cursor: pointer; opacity: 0; transition: opacity 0.2s; text-transform: uppercase; letter-spacing: 0.1em; }
 .review-card:hover .delete-btn { opacity: 1; }
 .delete-btn:hover { background: rgba(239,68,68,0.2); }
-.slider-nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; background: var(--bg); border-top: 1px solid var(--bdr); }
-.slider-dots { display: flex; gap: 8px; }
-.slider-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dim); cursor: pointer; transition: all 0.3s; }
-.slider-dot.active { background: var(--c); box-shadow: 0 0 10px var(--c); transform: scale(1.3); }
-.slider-arrows { display: flex; gap: 8px; }
-.slider-arrow { background: none; border: 1px solid var(--bdr); color: var(--dim); width: 32px; height: 32px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-.slider-arrow:hover { border-color: var(--c); color: var(--c); }
 .no-reviews { background: var(--bg); padding: 60px; text-align: center; color: var(--dim); font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; }
 
 /* CONTACT */
@@ -386,8 +395,8 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
 @media (max-width: 768px) {
   body { cursor: default; }
   #cur, #cur-r { display: none; }
-  nav { backdrop-filter: none; background: rgba(3,3,3,0.95); }
-  #mp  { backdrop-filter: none; background: rgba(3,3,3,0.98); }
+  nav { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(3,3,3,0.95); }
+  #mp  { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(3,3,3,0.98); }
   .scanlines, .vignette, .ticker { display: none; }
   nav { padding: 14px 20px; }
   .nav-logo { font-size: 1.4rem; }
@@ -417,6 +426,7 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
   #sale-tip { width: calc(100vw - 32px); left: 16px !important; }
   #scene { opacity: 0.7; }
   .fog-band { height: 140px; }
+  .review-card { min-width: 280px; max-width: 280px; }
 }
 @media (max-width: 480px) {
   .glitch { font-size: clamp(50px, 18vw, 90px); }
@@ -599,13 +609,6 @@ footer { padding: 36px 48px; border-top: 1px solid var(--bdr); display: flex; al
       <div id="reviews-grid" class="reviews-grid" style="display:none;"></div>
       <div style="overflow:hidden;">
         <div id="reviews-slider" class="reviews-slider" style="display:none;"></div>
-      </div>
-      <div class="slider-nav" id="slider-nav" style="display:none;">
-        <div class="slider-dots" id="slider-dots"></div>
-        <div class="slider-arrows">
-          <button class="slider-arrow" onclick="prevSlide()">&#x2190;</button>
-          <button class="slider-arrow" onclick="nextSlide()">&#x2192;</button>
-        </div>
       </div>
     </div>
   </section>
@@ -1070,7 +1073,7 @@ function repositionTip() {
 }
 
 /* REVIEWS */
-let reviews = [], currentSlide = 0, slideInterval = null;
+let reviews = [];
 
 async function loadReviews() {
   try {
@@ -1088,60 +1091,50 @@ function renderReviews() {
   const noEl     = document.getElementById('no-reviews');
   const gridEl   = document.getElementById('reviews-grid');
   const sliderEl = document.getElementById('reviews-slider');
-  const navEl    = document.getElementById('slider-nav');
 
   if (reviews.length === 0) {
     noEl.textContent = 'No reviews yet.';
     noEl.style.display = 'block';
-    gridEl.style.display = sliderEl.style.display = navEl.style.display = 'none';
+    gridEl.style.display = 'none';
+    sliderEl.style.display = 'none';
+    sliderEl.classList.remove('auto-scroll');
     return;
   }
   noEl.style.display = 'none';
 
   if (reviews.length <= 3) {
+    // few reviews: just show them as a static grid, no need to scroll
     gridEl.style.display   = 'grid';
-    sliderEl.style.display = navEl.style.display = 'none';
+    sliderEl.style.display = 'none';
+    sliderEl.classList.remove('auto-scroll');
     gridEl.innerHTML = reviews.map(r => cardHtml(r)).join('');
   } else {
-    gridEl.style.display = 'none';
+    // 4+ reviews: continuous auto-scrolling marquee, no clicking needed
+    gridEl.style.display   = 'none';
     sliderEl.style.display = 'flex';
-    navEl.style.display    = 'flex';
-    sliderEl.innerHTML = reviews.map(r => cardHtml(r, true)).join('');
-    document.getElementById('slider-dots').innerHTML = reviews.map((_, i) =>
-      '<div class="slider-dot ' + (i === 0 ? 'active' : '') + '" onclick="goToSlide(' + i + ')"></div>'
-    ).join('');
-    currentSlide = 0;
-    startSlider();
+
+    // duplicate the set once so the loop from -50% back to 0% is seamless
+    const cardsHtml = reviews.map(r => cardHtml(r)).join('');
+    sliderEl.innerHTML = cardsHtml + cardsHtml;
+    sliderEl.classList.add('auto-scroll');
+
+    // pace: ~6s per card, so more reviews = a longer, still-smooth loop
+    sliderEl.style.animationDuration = (reviews.length * 6) + 's';
   }
 }
 
-function cardHtml(r, isSlider = false) {
+function cardHtml(r) {
   const date  = r.timestamp
     ? new Date(r.timestamp.seconds * 1000).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
     : 'Just now';
   const stars   = '\u2B50'.repeat(r.rating);
   const isAdmin = window.auth && window.auth.currentUser != null;
   const del     = isAdmin ? '<button class="delete-btn" onclick="deleteReview(\'' + r.id + '\')">Delete</button>' : '';
-  const w       = isSlider ? 'min-width:min(400px, 100vw - 40px);' : '';
-  return '<div class="review-card" style="' + w + '">' + del +
+  return '<div class="review-card">' + del +
     '<div class="review-header"><div class="review-name">' + esc(r.name) + '</div>' +
     '<div class="review-stars">' + stars + '</div></div>' +
     '<div class="review-text">' + esc(r.feedback) + '</div>' +
     '<div class="review-date">' + date + '</div></div>';
-}
-
-function startSlider() {
-  if (slideInterval) clearInterval(slideInterval);
-  slideInterval = setInterval(nextSlide, 5000);
-}
-function nextSlide()  { currentSlide = (currentSlide + 1) % reviews.length; updateSlider(); }
-function prevSlide()  { currentSlide = (currentSlide - 1 + reviews.length) % reviews.length; updateSlider(); startSlider(); }
-function goToSlide(i) { currentSlide = i; updateSlider(); startSlider(); }
-function updateSlider() {
-  const el = document.getElementById('reviews-slider');
-  const cw = Math.min(400, window.innerWidth - 40);
-  el.style.transform = 'translateX(-' + (currentSlide * cw) + 'px)';
-  document.querySelectorAll('.slider-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
 }
 
 async function deleteReview(id) {
