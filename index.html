@@ -754,7 +754,11 @@ const imgObserver = new IntersectionObserver((entries, obs) => {
   });
 }, { rootMargin: '200px 0px' });
 
-/* LAZY VIDEO OBSERVER */
+/* LAZY VIDEO OBSERVER — only loads/decodes a frame, never autoplays.
+   Playback is triggered separately on hover (see wireVideoHover) so
+   we never have a whole grid of videos playing/decoding at once. */
+const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
+
 const vidObserver = new IntersectionObserver((entries, obs) => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
@@ -766,13 +770,16 @@ const vidObserver = new IntersectionObserver((entries, obs) => {
     spinner.className = 'pi-loading';
     pi.appendChild(spinner);
 
+    v.preload = 'metadata';
     v.src = v.dataset.src;
     delete v.dataset.src;
 
-    v.addEventListener('canplay', function onCanPlay() {
+    v.addEventListener('loadeddata', function onLoaded() {
       spinner.remove();
-      v.play().catch(() => {});
-      v.removeEventListener('canplay', onCanPlay);
+      // On touch devices there's no hover, so just play in-place like before.
+      // On desktop, stay paused on the first frame until the user hovers.
+      if (isTouchDevice) v.play().catch(() => {});
+      v.removeEventListener('loadeddata', onLoaded);
     });
 
     v.addEventListener('error', function onErr() {
@@ -785,10 +792,26 @@ const vidObserver = new IntersectionObserver((entries, obs) => {
     });
 
     v.load();
-    v.play().catch(() => {});
     obs.unobserve(v);
   });
 }, { rootMargin: '200px 0px' });
+
+/* Play a video only while its card is hovered (desktop only). */
+function wireVideoHover(grid) {
+  if (isTouchDevice) return;
+  grid.querySelectorAll('.pi').forEach(pi => {
+    const v = pi.querySelector('video');
+    if (!v) return;
+    pi.addEventListener('mouseenter', () => {
+      if (v.dataset.src) return; // not loaded yet, nothing to play
+      v.play().catch(() => {});
+    });
+    pi.addEventListener('mouseleave', () => {
+      v.pause();
+      v.currentTime = 0;
+    });
+  });
+}
 
 /* INIT */
 document.addEventListener('DOMContentLoaded', () => {
@@ -947,6 +970,7 @@ function buildPortfolio(tab) {
 
   grid.querySelectorAll('img.lazy-pending').forEach(img => imgObserver.observe(img));
   grid.querySelectorAll('video[data-src]').forEach(vid  => vidObserver.observe(vid));
+  wireVideoHover(grid);
   setTimeout(initReveal, 50);
 }
 
@@ -1118,8 +1142,8 @@ function renderReviews() {
     sliderEl.innerHTML = cardsHtml + cardsHtml;
     sliderEl.classList.add('auto-scroll');
 
-    // pace: ~6s per card, so more reviews = a longer, still-smooth loop
-    sliderEl.style.animationDuration = (reviews.length * 6) + 's';
+    // pace: ~14s per card, so more reviews = a longer, calmer loop
+    sliderEl.style.animationDuration = (reviews.length * 14) + 's';
   }
 }
 
