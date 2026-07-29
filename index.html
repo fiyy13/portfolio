@@ -754,9 +754,6 @@ const imgObserver = new IntersectionObserver((entries, obs) => {
   });
 }, { rootMargin: '200px 0px' });
 
-/* LAZY VIDEO OBSERVER — only loads/decodes a frame, never autoplays.
-   Playback is triggered separately on hover (see wireVideoHover) so
-   we never have a whole grid of videos playing/decoding at once. */
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
 
 const vidObserver = new IntersectionObserver((entries, obs) => {
@@ -776,8 +773,6 @@ const vidObserver = new IntersectionObserver((entries, obs) => {
 
     v.addEventListener('loadeddata', function onLoaded() {
       spinner.remove();
-      // On touch devices there's no hover, so just play in-place like before.
-      // On desktop, stay paused on the first frame until the user hovers.
       if (isTouchDevice) v.play().catch(() => {});
       v.removeEventListener('loadeddata', onLoaded);
     });
@@ -796,7 +791,6 @@ const vidObserver = new IntersectionObserver((entries, obs) => {
   });
 }, { rootMargin: '200px 0px' });
 
-/* Play a video only while its card is hovered (desktop only). */
 function wireVideoHover(grid) {
   if (isTouchDevice) return;
   grid.querySelectorAll('.pi').forEach(pi => {
@@ -1127,23 +1121,18 @@ function renderReviews() {
   noEl.style.display = 'none';
 
   if (reviews.length <= 3) {
-    // few reviews: just show them as a static grid, no need to scroll
     gridEl.style.display   = 'grid';
     sliderEl.style.display = 'none';
     sliderEl.classList.remove('auto-scroll');
     gridEl.innerHTML = reviews.map(r => cardHtml(r)).join('');
   } else {
-    // 4+ reviews: continuous auto-scrolling marquee, no clicking needed
     gridEl.style.display   = 'none';
     sliderEl.style.display = 'flex';
 
-    // duplicate the set once so the loop from -50% back to 0% is seamless
     const cardsHtml = reviews.map(r => cardHtml(r)).join('');
     sliderEl.innerHTML = cardsHtml + cardsHtml;
     sliderEl.classList.add('auto-scroll');
-
-    // pace: ~14s per card, so more reviews = a longer, calmer loop
-    sliderEl.style.animationDuration = (reviews.length * 14) + 's';
+    sliderEl.style.animationDuration = (reviews.length * 50) + 's';
   }
 }
 
