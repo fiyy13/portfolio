@@ -355,7 +355,7 @@ nav {
 /* REVIEWS — continuous auto-scrolling marquee */
 .reviews-container { position: relative; overflow: hidden; border: 1px solid var(--bdr); }
 .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1px; background: var(--bdr); }
-.reviews-slider { display: flex; gap: 1px; will-change: transform; }
+.reviews-slider { display: flex; gap: 1px; will-change: transform; width: max-content; }
 .reviews-slider.auto-scroll { animation: reviews-marquee linear infinite; }
 .reviews-container:hover .reviews-slider.auto-scroll { animation-play-state: paused; }
 @keyframes reviews-marquee {
