@@ -1132,7 +1132,7 @@ function renderReviews() {
     const cardsHtml = reviews.map(r => cardHtml(r)).join('');
     sliderEl.innerHTML = cardsHtml + cardsHtml;
     sliderEl.classList.add('auto-scroll');
-    sliderEl.style.animationDuration = (reviews.length * 6) + 's';
+    sliderEl.style.animationDuration = (reviews.length * 2) + 's';
   }
 }
 
